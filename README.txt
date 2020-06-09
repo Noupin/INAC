@@ -1,0 +1,1 @@
+This code is meant to be built on and made more personalized. As of now it is based on Weights and Biases audioCNN.
