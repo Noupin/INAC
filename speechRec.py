@@ -27,7 +27,7 @@ X_train, X_test, y_train, y_test = get_train_test()
 
 # # Feature dimension
 channels = 1
-config.epochs = 100
+config.epochs = 50
 config.batch_size = 100
 
 num_classes = 3
@@ -38,7 +38,7 @@ X_test = X_test.reshape(X_test.shape[0], config.buckets, config.max_len, channel
 y_train_hot = to_categorical(y_train)
 y_test_hot = to_categorical(y_test)
 
-'''model = Sequential([
+model = Sequential([
     Conv2D(32,
           (3, 3),
           input_shape=(config.buckets, config.max_len, channels),
@@ -58,14 +58,14 @@ y_test_hot = to_categorical(y_test)
 
 
 model.compile(loss="categorical_crossentropy",
-                  optimizer="adam",
+                  optimizer="rmsprop",
                   metrics=['accuracy'])
 
 model.fit(X_train, y_train_hot, epochs=config.epochs, validation_data=(X_test, y_test_hot), callbacks=[WandbCallback(data_type="image", labels=labels)])
 
-model.save(modelPath + f"speechModel{config.epochs}.model")'''
+model.save(modelPath + f"speechModel{config.epochs}.model")
 
-model = tf.keras.models.load_model(r"C:\Coding\Models\audioModels\speechModel100.model")
+#model = tf.keras.models.load_model(r"C:\Coding\Models\audioModels\speechModel100.model")
 #model.summary()
 
 check = 100
