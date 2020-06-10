@@ -1,12 +1,22 @@
-import librosa
+#pylint: disable=C0103, C0301
+"""
+The functions needed to preprocess the data and make
+the data usable for AI training
+"""
+__author__ = "Noupin, W&B"
+
+#Third Party Imports
 import os
+import librosa
 from sklearn.model_selection import train_test_split
-from keras.utils import to_categorical
 import numpy as np
 from tqdm import tqdm
+import tensorflow as tf
 
+#First Party Imports
 from constants import Constants
 from tunableVariables import Tunable
+import utilities
 
 class Preprocessing():
     """
@@ -19,35 +29,28 @@ class Preprocessing():
         """
         self.labels = os.listdir(Constants.dataPath)
 
+        #Save data to array file first
+        if not os.listdir(Constants.dataPath) == Constants.folderNames:
+            self.save_data_to_array()
+
+        #Loading train set and test set
+        self.X_train, self.X_test, self.y_train, self.y_test = self.get_train_test()
+
+        self.X_train = self.X_train.reshape(self.X_train.shape[0], Tunable.buckets, Tunable.maxLen, Tunable.channels)
+        self.X_test = self.X_test.reshape(self.X_test.shape[0], Tunable.buckets, Tunable.maxLen, Tunable.channels)
+
+        self.y_train_hot = tf.keras.utils.to_categorical(self.y_train)
+        self.y_test_hot = tf.keras.utils.to_categorical(self.y_test)
+
+        self.datasetSize = len(self.X_train)
+
     def get_labels(self):
         """
-        Takes an input of a folder path and outputs a 
+        Takes an input of a folder path and outputs a
         tuple (Label, Indices of the labels, one-hot encoded labels)
         """
         label_indices = np.arange(0, len(self.labels))
-        return self.labels, label_indices, to_categorical(label_indices)
-
-    def wav2mfcc(self, file_path):
-        """
-        Convert file from .wav to Mel-Frequency Cepstral Coefficients
-        """
-        #Load .wav to array
-        wave, _ = librosa.load(file_path, mono=True, sr=None)
-        wave = np.asfortranarray(wave[::3])
-
-        #Convert to Mel-Frequency Cepstral Coefficients
-        mfcc = librosa.feature.mfcc(wave, sr=16000, n_mfcc=Tunable.buckets)
-
-        # If maximum length exceeds mfcc lengths then pad the remaining ones
-        if (Tunable.maxLen > mfcc.shape[1]):
-            pad_width = Tunable.maxLen - mfcc.shape[1]
-            mfcc = np.pad(mfcc, pad_width=((0, 0), (0, pad_width)), mode='constant')
-
-        # Else cutoff the remaining parts
-        else:
-            mfcc = mfcc[:, :Tunable.maxLen]
-        
-        return mfcc
+        return self.labels, label_indices, tf.keras.utils.to_categorical(label_indices)
 
     def save_data_to_array(self):
         """
@@ -65,7 +68,7 @@ class Preprocessing():
                 wavFiles.append(os.path.join(labelPath, wavFile))
 
             for wavFile in tqdm(wavFiles, "Saving vectors of label - '{}'".format(label)):
-                mfcc = self.wav2mfcc(wavFile)
+                mfcc = utilities.wav2mfcc(wavFile)
                 mfcc_vectors.append(mfcc)
 
             np.save(saveFilePath, mfcc_vectors)
@@ -83,14 +86,17 @@ class Preprocessing():
         for i, label in enumerate(self.labels[1:]):
             x = np.load(Constants.savePath + label + '.npy')
             X = np.vstack((X, x))
-            y = np.append(y, np.full(x.shape[0], fill_value= (i + 1)))
+            y = np.append(y, np.full(x.shape[0], fill_value=(i + 1)))
 
         assert X.shape[0] == len(y)
 
-        return train_test_split(X, y, test_size= (1 - split_ratio), random_state=random_state, shuffle=True)
+        return train_test_split(X, y, test_size=(1 - split_ratio), random_state=random_state, shuffle=True)
 
 
-    def prepare_dataset(self, path=Constants.dataPath):
+    def prepare_dataset(self):
+        """
+        Prepares the dataset to to be used in AI learning
+        """
         data = {}
         for label in self.labels:
             labelPath = os.path.join(Constants.dataPath, label)
@@ -114,7 +120,7 @@ class Preprocessing():
         """
         Load the dataset from saved .npy files
         """
-        data = self.prepare_dataset(Constants.dataPath)
+        data = self.prepare_dataset()
 
         dataset = []
 
