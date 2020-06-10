@@ -9,10 +9,13 @@ class Constants:
     Constant variables in INAC
     """
 
-    modelPath = r"C:\Coding\Models\audioModels\\"
-    dataPath = r"C:\Datasets\Audio\Wav\\"
-    savePath = r"C:\Datasets\Audio\\"
+    modelPath = r"C:\Coding\Models\audioModels/"
+    dataPath = r"C:\Datasets\Audio\Wav/"
+    savePath = r"C:\Datasets\Audio/"
+    sampleWavFilePath = r"C:\Coding\Python\ML\Audio\INAC\sample.wav"
 
     folderNames = ["bed", "happy", "cat"]
     folderNames.sort()
     numClasses = len(folderNames)
+
+    channelMap = {1: True, 2: False}

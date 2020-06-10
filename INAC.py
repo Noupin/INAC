@@ -6,10 +6,12 @@ __author__ = "Noupin"
 
 #Third Party Imports
 import random
+import time
 
 #First Party Imports
 from preprocessing import Preprocessing
 from model import Model
+import utilities
 
 
 class INAC():
@@ -51,7 +53,16 @@ class INAC():
             self.Model.loadModel()
 
         while predictBool == "y":
-            self.Model.predict(random.randint(0, self.preproVars.datasetSize))
+            predictIdx = random.randint(0, self.preproVars.datasetSize)
+            self.Model.predict(predictIdx)
+            mfcc = utilities.reshapeMfcc(self.preproVars.X_train[predictIdx])
+            #print(mfcc)
+            #print(self.preproVars.X_train[predictIdx])
+            #print(self.preproVars.X_train[predictIdx][0])
+            #print(len(self.preproVars.X_train[predictIdx][0]))
+            time.sleep(0.5)
+            utilities.mfcc2wav(mfcc)
+            utilities.playWav()
             predictBool = input("Would you like to see another prediction(y/any char): ").lower()
 
 

@@ -9,11 +9,12 @@ class Tunable:
     """
     Tunable variables for INAC
     """
-    maxLen = 11
-    buckets = 20
+    maxLen = 100
+    buckets = 12
     channels = 1
+    samplingRate = 44100
 
-    epochs = 50
+    epochs = 5
     BATCH_SIZE = 100
 
     dropoutVal = 0.4
@@ -21,4 +22,4 @@ class Tunable:
     convFilterSize = (3, 3)
     poolSize = (2, 2)
 
-    trainedModelPath = r"C:\Coding\Models\audioModels\speechModel50epochs100batch1channels.model"
+    trainedModelPath = r"C:\Coding\Models\audioModels\speechModel5epochs100batch1channels.model"

@@ -30,8 +30,8 @@ class Preprocessing():
         self.labels = os.listdir(Constants.dataPath)
 
         #Save data to array file first
-        if not os.listdir(Constants.dataPath) == Constants.folderNames:
-            self.save_data_to_array()
+        #if not os.listdir(Constants.dataPath) == Constants.folderNames:
+        self.save_data_to_array()
 
         #Loading train set and test set
         self.X_train, self.X_test, self.y_train, self.y_test = self.get_train_test()
@@ -108,8 +108,8 @@ class Preprocessing():
             for wavfile in data[label]['path']:
                 wave, _ = librosa.load(wavfile, mono=True, sr=None)
                 # Downsampling
-                wave = wave[::3]
-                mfcc = librosa.feature.mfcc(wave, sr=16000)
+                #wave = wave[::3]
+                mfcc = librosa.feature.mfcc(wave, sr=Tunable.samplingRate)
                 vectors.append(mfcc)
 
             data[label]['mfcc'] = vectors
