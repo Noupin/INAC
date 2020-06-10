@@ -55,14 +55,7 @@ class INAC():
         while predictBool == "y":
             predictIdx = random.randint(0, self.preproVars.datasetSize)
             self.Model.predict(predictIdx)
-            mfcc = utilities.reshapeMfcc(self.preproVars.X_train[predictIdx])
-            #print(mfcc)
-            #print(self.preproVars.X_train[predictIdx])
-            #print(self.preproVars.X_train[predictIdx][0])
-            #print(len(self.preproVars.X_train[predictIdx][0]))
-            time.sleep(0.5)
-            utilities.mfcc2wav(mfcc)
-            utilities.playWav()
+            utilities.playWav(self.preproVars.X_train_sound[predictIdx][0])
             predictBool = input("Would you like to see another prediction(y/any char): ").lower()
 
 

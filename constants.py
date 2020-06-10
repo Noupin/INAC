@@ -16,6 +16,11 @@ class Constants:
 
     folderNames = ["bed", "happy", "cat"]
     folderNames.sort()
+
+    numpyNames = folderNames.copy()
+    for fileName in range(len(numpyNames)):
+        numpyNames[fileName] = numpyNames[fileName] + ".npy"
+
     numClasses = len(folderNames)
 
     channelMap = {1: True, 2: False}

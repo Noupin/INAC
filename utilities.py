@@ -53,5 +53,5 @@ def mfcc2wav(mfcc):
     wav = librosa.feature.inverse.mfcc_to_audio(mfcc)
     librosa.output.write_wav(Constants.sampleWavFilePath, wav, sr=Tunable.samplingRate)
 
-def playWav():
-    playsound(Constants.sampleWavFilePath)
+def playWav(filePath):
+    playsound(filePath)
