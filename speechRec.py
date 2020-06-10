@@ -1,4 +1,3 @@
-from preprocess import *
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, LSTM
@@ -9,39 +8,28 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
+from tunableVariables import Tunable
+from constants import Constants
+import preprocessing
+
 wandb.init(project="speechrec")
-config = wandb.config
 
-config.max_len = 11
-config.buckets = 20
+#Save data to array file first
+#preprocessing.save_data_to_array(max_len=Tunable.maxLen, n_mfcc=Tunable.buckets)
 
-modelPath = r"C:\Coding\Models\audioModels/"
+#Loading train set and test set
+X_train, X_test, y_train, y_test = preprocessing.get_train_test()
 
-# Save data to array file first
-#save_data_to_array(max_len=config.max_len, n_mfcc=config.buckets)
-
-labels=["bed", "happy", "cat"]
-
-# # Loading train set and test set
-X_train, X_test, y_train, y_test = get_train_test()
-
-# # Feature dimension
-channels = 1
-config.epochs = 50
-config.batch_size = 100
-
-num_classes = 3
-
-X_train = X_train.reshape(X_train.shape[0], config.buckets, config.max_len, channels)
-X_test = X_test.reshape(X_test.shape[0], config.buckets, config.max_len, channels)
+X_train = X_train.reshape(X_train.shape[0], Tunable.buckets, Tunable.maxLen, Tunable.channels)
+X_test = X_test.reshape(X_test.shape[0], Tunable.buckets, Tunable.maxLen, Tunable.channels)
 
 y_train_hot = to_categorical(y_train)
 y_test_hot = to_categorical(y_test)
 
 model = Sequential([
-    Conv2D(32,
+    Conv2D(Tunable.convLayers,
           (3, 3),
-          input_shape=(config.buckets, config.max_len, channels),
+          input_shape=(Tunable.buckets, Tunable.maxLen, Tunable.channels),
           activation='relu'),
     MaxPooling2D(pool_size=(2, 2)),
 
@@ -53,17 +41,16 @@ model = Sequential([
     Dropout(0.3),
     Flatten(),
     Dropout(0.3),
-    Dense(num_classes, activation='softmax')
+    Dense(Constants.numClasses, activation='softmax')
 ])
-
 
 model.compile(loss="categorical_crossentropy",
                   optimizer="rmsprop",
                   metrics=['accuracy'])
 
-model.fit(X_train, y_train_hot, epochs=config.epochs, validation_data=(X_test, y_test_hot), callbacks=[WandbCallback(data_type="image", labels=labels)])
+model.fit(X_train, y_train_hot, epochs=Tunable.epochs, validation_data=(X_test, y_test_hot), callbacks=[tf.keras.callbacks.ReduceLROnPlateau(), WandbCallback(data_type="image", labels=Constants.folderNames)])
 
-model.save(modelPath + f"speechModel{config.epochs}.model")
+model.save(Constants.modelPath + f"speechModel{Tunable.epochs}.model")
 
 #model = tf.keras.models.load_model(r"C:\Coding\Models\audioModels\speechModel100.model")
 #model.summary()
@@ -71,5 +58,5 @@ model.save(modelPath + f"speechModel{config.epochs}.model")
 check = 100
 
 print("\n\nExpected: {expected}\nPredicted: {predicted}".format(
-                                                     expected=labels[int(y_train[check])],
-                                                     predicted=labels[np.argmax(model.predict(X_train)[check])]))
+                                                     expected=Constants.folderNames[int(y_train[check])],
+                                                     predicted=Constants.folderNames[np.argmax(model.predict(X_train)[check])]))
