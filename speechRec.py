@@ -1,3 +1,9 @@
+"""
+Classifies .wav files to a given label
+"""
+__author__ = "Noupin, W&B"
+
+#Third Party Imports
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, LSTM
@@ -7,18 +13,24 @@ from wandb.keras import WandbCallback
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+import os
 
+#First Party Imports
 from tunableVariables import Tunable
 from constants import Constants
-import preprocessing
+from preprocessing import Preprocessing
+
 
 wandb.init(project="speechrec")
+prepro = Preprocessing()
 
 #Save data to array file first
-#preprocessing.save_data_to_array(max_len=Tunable.maxLen, n_mfcc=Tunable.buckets)
+if not os.listdir(Constants.dataPath) == Constants.folderNames:
+      prepro.save_data_to_array()
 
 #Loading train set and test set
-X_train, X_test, y_train, y_test = preprocessing.get_train_test()
+X_train, X_test, y_train, y_test = prepro.get_train_test()
+
 
 X_train = X_train.reshape(X_train.shape[0], Tunable.buckets, Tunable.maxLen, Tunable.channels)
 X_test = X_test.reshape(X_test.shape[0], Tunable.buckets, Tunable.maxLen, Tunable.channels)
