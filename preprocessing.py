@@ -38,8 +38,8 @@ class Preprocessing():
         self.X_train, self.X_test, self.y_train, self.y_test = self.get_train_test()
         self.X_train_sound, self.X_test_sound, self.y_train_sound, self.y_test_sound = self.get_filename_train_test()
 
-        self.X_train = self.X_train.reshape(self.X_train.shape[0], Tunable.buckets, Tunable.maxLen, Tunable.channels)
-        self.X_test = self.X_test.reshape(self.X_test.shape[0], Tunable.buckets, Tunable.maxLen, Tunable.channels)
+        self.X_train = self.X_train.reshape(self.X_train.shape[0], Tunable.tunableDict['buckets'], Tunable.tunableDict['maxLen'], Tunable.tunableDict['channels'])
+        self.X_test = self.X_test.reshape(self.X_test.shape[0], Tunable.tunableDict['buckets'], Tunable.tunableDict['maxLen'], Tunable.tunableDict['channels'])
 
         self.y_train_hot = tf.keras.utils.to_categorical(self.y_train)
         self.y_test_hot = tf.keras.utils.to_categorical(self.y_test)
@@ -106,7 +106,7 @@ class Preprocessing():
 
         assert X.shape[0] == len(y)
 
-        return train_test_split(X, y, test_size=(1 - Tunable.datasetSplit), random_state=Tunable.datasetRandomState, shuffle=True)
+        return train_test_split(X, y, test_size=(1 - Tunable.tunableDict['datasetSplit']), random_state=Tunable.tunableDict['datasetRandomState'], shuffle=True)
     
     def get_filename_train_test(self):
         """
@@ -124,7 +124,7 @@ class Preprocessing():
 
         assert X.shape[0] == len(y)
 
-        return train_test_split(X, y, test_size=(1 - Tunable.datasetSplit), random_state=Tunable.datasetRandomState, shuffle=True)
+        return train_test_split(X, y, test_size=(1 - Tunable.tunableDict['datasetSplit']), random_state=Tunable.tunableDict['datasetRandomState'], shuffle=True)
 
 
     def prepare_dataset(self):
@@ -143,7 +143,7 @@ class Preprocessing():
                 wave, _ = librosa.load(wavfile, mono=True, sr=None)
                 # Downsampling
                 #wave = wave[::3]
-                mfcc = librosa.feature.mfcc(wave, sr=Tunable.samplingRate)
+                mfcc = librosa.feature.mfcc(wave, sr=Tunable.tunableDict['samplingRate'])
                 vectors.append(mfcc)
 
             data[label]['mfcc'] = vectors

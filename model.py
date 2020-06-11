@@ -33,20 +33,20 @@ class Model():
         Create and compile AI model to be used
         """
         self.model = tf.keras.models.Sequential([
-            tf.keras.layers.Conv2D(Tunable.convFilters,
-                                   Tunable.convFilterSize,
-                                   input_shape=(Tunable.buckets, Tunable.maxLen, Tunable.channels),
+            tf.keras.layers.Conv2D(Tunable.tunableDict['convFilters'],
+                                   tuple(Tunable.tunableDict['convFilterSize']),
+                                   input_shape=(Tunable.tunableDict['buckets'], Tunable.tunableDict['maxLen'], Tunable.tunableDict['channels']),
                                    activation=tf.nn.leaky_relu),
-            tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+            tf.keras.layers.MaxPooling2D(pool_size=tuple(Tunable.tunableDict['poolSize'])),
 
-            tf.keras.layers.Conv2D(Tunable.convFilters,
-                                   Tunable.convFilterSize,
+            tf.keras.layers.Conv2D(Tunable.tunableDict['convFilters'],
+                                   tuple(Tunable.tunableDict['convFilterSize']),
                                    activation=tf.nn.leaky_relu),
-            tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+            tf.keras.layers.MaxPooling2D(pool_size=tuple(Tunable.tunableDict['poolSize'])),
 
-            tf.keras.layers.Dropout(Tunable.dropoutVal),
+            tf.keras.layers.Dropout(Tunable.tunableDict['dropoutVal']),
             tf.keras.layers.Flatten(),
-            tf.keras.layers.Dropout(Tunable.dropoutVal),
+            tf.keras.layers.Dropout(Tunable.tunableDict['dropoutVal']),
             tf.keras.layers.Dense(Constants.numClasses, activation='softmax')
         ])
 
@@ -59,7 +59,7 @@ class Model():
         Trains the model over a given dataset
         """
         self.model.fit(self.preproVars.X_train, self.preproVars.y_train_hot,
-                       epochs=Tunable.epochs,
+                       epochs=Tunable.tunableDict['epochs'],
                        validation_data=(self.preproVars.X_test, self.preproVars.y_test_hot),
                        callbacks=[tf.keras.callbacks.ReduceLROnPlateau(),
                                   WandbCallback(data_type="image",
@@ -69,13 +69,13 @@ class Model():
         """
         Saves the model to diskspace
         """
-        self.model.save(Constants.modelPath + f"speechModel{Tunable.epochs}epochs{Tunable.BATCH_SIZE}batch{Tunable.channels}channels.model")
+        self.model.save(Constants.modelPath + f"speechModel{Tunable.tunableDict['epochs']}epochs{Tunable.tunableDict['BATCH_SIZE']}batch{Tunable.tunableDict['channels']}channels.model")
 
     def loadModel(self):
         """
         Loads a pretrained model to be used or trained more
         """
-        self.model = tf.keras.models.load_model(Tunable.trainedModelPath)
+        self.model = tf.keras.models.load_model(Tunable.tunableDict['trainedModelPath'])
 
     def predict(self, index):
         """
