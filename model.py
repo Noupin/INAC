@@ -69,14 +69,20 @@ class Model():
             tf.keras.layers.Dense(512, activation=tf.nn.leaky_relu),
 
             tf.keras.layers.Dropout(Tunable.tunableDict['dropoutVal']),
+            tf.keras.layers.Dense(512, activation=tf.nn.leaky_relu),
+
+            tf.keras.layers.Dropout(Tunable.tunableDict['dropoutVal']),
             tf.keras.layers.Dense(256, activation=tf.nn.leaky_relu),
+
+            tf.keras.layers.Dropout(Tunable.tunableDict['dropoutVal']),
+            tf.keras.layers.Dense(128, activation=tf.nn.leaky_relu),
 
             tf.keras.layers.Dropout(Tunable.tunableDict['dropoutVal']),
             tf.keras.layers.Dense(Constants.numClasses, activation='softmax')
         ])
 
-        self.model.compile(loss="categorical_crossentropy",
-                           optimizer="adam",
+        self.model.compile(loss=tf.keras.losses.categorical_crossentropy,
+                           optimizer=tf.keras.optimizers.RMSprop(0.001),
                            metrics=['accuracy'])
         self.model.summary()
 

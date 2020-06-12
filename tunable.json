@@ -9,10 +9,10 @@
     "pitchShiftUpper": 7,
 
     "epochs": 50,
-    "BATCH_SIZE": 64,
+    "BATCH_SIZE": 32,
 
     "dropoutVal": 0.4,
-    "convFilters": 16,
+    "convFilters": 24,
     "largeConvFilterSize": [5, 5],
     "mediumConvFilterSize": [3, 3],
     "smallConvFilterSize": [1, 1],
@@ -21,7 +21,7 @@
     "embeddingSize": 100,
 
     "datasetSplit": 0.7,
-    "datasetRandomState": 42,
+    "datasetRandomState": 57,
 
     "trainedModelPath": "C:/Coding/Models/audioModels/speechModel50epochs64batch1channels.model"
 

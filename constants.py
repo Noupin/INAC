@@ -4,6 +4,9 @@ Holds a data class with non changing variables
 """
 __author__ = "Noupin"
 
+#Third Party Imports
+import os
+
 class Constants:
     """
     Constant variables in INAC
@@ -14,7 +17,7 @@ class Constants:
     savePath = r"C:\Datasets\Audio/"
     sampleWavFilePath = r"C:\Coding\Python\ML\Audio\INAC\sample.wav"
 
-    folderNames = ["bed", "happy", "cat"]
+    folderNames = os.listdir(dataPath)
     folderNames.sort()
 
     numpyNames = folderNames.copy()
