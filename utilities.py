@@ -32,7 +32,7 @@ def wav2mfcc(file_path):
     else:
         mfcc = mfcc[:, :Tunable.tunableDict['maxLen']]
 
-    return mfcc
+    return [mfcc]
 
 def wav2mfccDataAugmnetation(file_path):
     """

@@ -70,7 +70,7 @@ class Preprocessing():
                 wavFiles.append(os.path.join(labelPath, wavFile))
 
             for wavFile in tqdm(wavFiles, "Saving vectors of label - '{}'".format(label)):
-                mfcc = utilities.wav2mfccDataAugmnetation(wavFile)
+                mfcc = utilities.wav2mfcc(wavFile)
                 for data in mfcc:
                     mfcc_vectors.append(data)
 
