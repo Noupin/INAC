@@ -34,20 +34,32 @@ def wav2mfcc(file_path):
 
     return mfcc
 
-def reshapeMfcc(mfcc):
-    shapedMfcc = []
+def wav2mfccDataAugmnetation(file_path):
+    """
+    Convert file from .wav to Mel-Frequency Cepstral Coefficients
+    and augment the data to enable better learning
+    """
+    #Load .wav to array
+    augmentArray =[]
+    wave, _ = librosa.load(file_path, mono=Constants.channelMap[Tunable.tunableDict['channels']], sr=Tunable.tunableDict['samplingRate'])
+    for i in range(Tunable.tunableDict['pitchShiftLower'], Tunable.tunableDict['pitchShiftUpper']):
+        wave = librosa.effects.pitch_shift(wave, sr=Tunable.tunableDict['samplingRate'], n_steps=i)
+        wave = np.asfortranarray(wave)
 
-    for _ in range(Tunable.tunableDict['buckets']):
-        shapedMfcc.append([])
+        #Convert to Mel-Frequency Cepstral Coefficients
+        mfcc = librosa.feature.mfcc(wave, sr=Tunable.tunableDict['samplingRate'], n_mfcc=Tunable.tunableDict['buckets'])
 
-    subArrCount = 0
-    for arr in mfcc:
-        for subArr in arr:
-            for val in subArr:
-                shapedMfcc[subArrCount].append(val)
-        subArrCount += 1
-    
-    return shapedMfcc
+        # If maximum length exceeds mfcc lengths then pad the remaining ones
+        if Tunable.tunableDict['maxLen'] > mfcc.shape[1]:
+            pad_width = Tunable.tunableDict['maxLen'] - mfcc.shape[1]
+            mfcc = np.pad(mfcc, pad_width=((0, 0), (0, pad_width)), mode='minimum')
+
+        # Else cutoff the remaining parts
+        else:
+            mfcc = mfcc[:, :Tunable.tunableDict['maxLen']]
+        augmentArray.append(mfcc)
+
+    return augmentArray
 
 def mfcc2wav(mfcc):
     wav = librosa.feature.inverse.mfcc_to_audio(mfcc)

@@ -11,6 +11,7 @@ import time
 #First Party Imports
 from preprocessing import Preprocessing
 from model import Model
+from record import Record
 import utilities
 
 
@@ -31,6 +32,7 @@ class INAC():
         """
         loadOrCreate = ''
         predictBool = ''
+        newOrOld = ''
 
         while loadOrCreate not in ('c', 'l', 'tl'):
             loadOrCreate = input("Would you like to load, create or train a loaded a model(l/c/tl): ").lower()
@@ -53,10 +55,12 @@ class INAC():
             self.Model.loadModel()
 
         while predictBool == "y":
+            while newOrOld not in ('n', 'o'):
+                newOrOld = input("Would you lke to record a new sound or use an old sound(n/o): ")
             predictIdx = random.randint(0, self.preproVars.datasetSize)
-            self.Model.predict(predictIdx)
-            utilities.playWav(self.preproVars.X_train_sound[predictIdx][0])
+            self.Model.predict(newOrOld, index=predictIdx)
             predictBool = input("Would you like to see another prediction(y/any char): ").lower()
+            newOrOld = ''
 
 
 CAS = INAC()

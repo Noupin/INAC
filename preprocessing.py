@@ -44,7 +44,7 @@ class Preprocessing():
         self.y_train_hot = tf.keras.utils.to_categorical(self.y_train)
         self.y_test_hot = tf.keras.utils.to_categorical(self.y_test)
 
-        self.datasetSize = len(self.X_train)
+        self.datasetSize = int(len(self.X_train)/(Tunable.tunableDict["pitchShiftUpper"] - Tunable.tunableDict["pitchShiftLower"]))
 
     def get_labels(self):
         """
@@ -70,8 +70,9 @@ class Preprocessing():
                 wavFiles.append(os.path.join(labelPath, wavFile))
 
             for wavFile in tqdm(wavFiles, "Saving vectors of label - '{}'".format(label)):
-                mfcc = utilities.wav2mfcc(wavFile)
-                mfcc_vectors.append(mfcc)
+                mfcc = utilities.wav2mfccDataAugmnetation(wavFile)
+                for data in mfcc:
+                    mfcc_vectors.append(data)
 
             np.save(saveFilePath, mfcc_vectors)
     
